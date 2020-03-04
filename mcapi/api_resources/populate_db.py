@@ -6,17 +6,24 @@ import psycopg2
 
 load_dotenv()
 
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
+"""Use code below when working with a local postgres database for
+development, otherwise ssl required to establish connection with
+heroku hosted postgres"""
+# DB_NAME = os.getenv("DB_NAME")
+# DB_USER = os.getenv("DB_USER")
+# DB_PASSWORD = os.getenv("DB_PASSWORD")
+# DB_HOST = os.getenv("DB_HOST")
+# DB_PORT = os.getenv("DB_PORT")
 
-connection = psycopg2.connect(dbname=DB_NAME,
-                              user=DB_USER,
-                              password=DB_PASSWORD,
-                              host=DB_HOST,
-                              port=DB_PORT)
+# connection = psycopg2.connect(dbname=DB_NAME,
+                              # user=DB_USER,
+                              # password=DB_PASSWORD,
+                              # host=DB_HOST,
+                              # port=DB_PORT)
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+connection = psycopg2.connect(DATABASE_URL, sslmode='require')
 cursor = connection.cursor()
 
 query = """
