@@ -8,6 +8,7 @@ from mcapi.models import db, Strain_data
 from joblib import load
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
+from gensim.utils import simple_preprocess
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -20,6 +21,8 @@ resPath = os.path.join(os.path.dirname(__file__),
                        '..', 'api_resources')
 
 
+
+
 class strainSuggester():
     def __init__(self):
         self.nn = pickle.load(
@@ -27,15 +30,17 @@ class strainSuggester():
         )
 
         self.tfidf = pickle.load(
-            open(os.path.join(resPath,'tfidf.pkl'), 'rb')
+            open(os.path.join(resPath, 'tfidf.pkl'), 'rb')
         )
 
-    def suggestStrain(self, input_text, output_size):
-        tokens = self.tfidf.transform([input_text]).todense()
-        return self.nn.kneighbors(tokens, n_neighbors=output_size)[1][0]
+    def suggestStrain(self, input_text):
+        tokenize = [token for token in simple_preprocess(input_text)]
+        tokens = self.tfidf.transform(tokenize).todense()
+        return self.nn.kneighbors(tokens)
 
 
 model_lr = strainSuggester()
+
 
 @primary_routes.route("/")
 def root():
@@ -53,30 +58,40 @@ def get_strain(strain_id):
 
 
 # TODO: Create route for GET requests from web backend
-@primary_routes.route("/predict", methods=["GET","POST"])
+@primary_routes.route("/predict", methods=["POST"])
 def predict():
     user_input = request.get_json()
-    prediction = model_lr.suggestStrain(user_input["input"], output_size=1)
-    logging.info(prediction)
-    pred = int(prediction)
-    logging.info(pred)
 
-    res = Strain_data.query.filter(Strain_data.id == pred).all()
+    _id = user_input["id"]
+    race = user_input["race"]
+    positive_effects = user_input["positive_effects"]
+    negative_effects_avoid = user_input["negative_effects_avoid"]
+    ailments = user_input["ailments"]
+    flavors = user_input["flavors"]
+    additional_desired_effects = user_input["additional_desired_effects"]
+    user_id = user_input["user_id"]
 
-    if res == []:
-        return jsonify({"message": "list index out of range, try again"})
-    else:
-        result = res[0]
+    strings_to_concat = [race, positive_effects,
+                         negative_effects_avoid, ailments, flavors]
 
-        return jsonify({'id': result.id,
-                    'name': result.name,
-                    'race': result.race,
-                    'flavors': result.flavors,
-                    'positive': result.positive,
-                    'negative': result.negative,
-                    'medical': result.medical,
-                    'rating': result.rating,
-                    'description': result.description})
+    attributes = ' '.join(strings_to_concat)
+    logging.info("This is attributes: " + attributes)
 
+    # variable "prediction" will contain a list of 10 id's
+    prediction = model_lr.suggestStrain(attributes)
 
+    nums = (prediction[1])
+    lst = nums.tolist()
+    prediction = lst[0]
 
+    temp = []
+
+    for pred in prediction:
+        result = Strain_data.query.filter(Strain_data.id == pred).all()
+        temp.append(result)
+
+    strain_ids = [prediction[i] for i in range(10)]
+
+    return jsonify({"id": _id,
+                    "user_id": user_id,
+                    "strain_ids": strain_ids})
