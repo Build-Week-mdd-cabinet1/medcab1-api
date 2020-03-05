@@ -2,7 +2,7 @@ import os
 import logging
 
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from mcapi.models import db, Strain_data
 from joblib import load
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -89,7 +89,17 @@ def predict():
     # lst = nums.tolist()
     # prediction = lst[0]
 
-    # temp = []
+        return jsonify({'id': result.id,
+                    'name': result.name,
+                    'race': result.race,
+                    'flavors': result.flavors,
+                    'positive': result.positive,
+                    'negative': result.negative,
+                    'medical': result.medical,
+                    'rating': result.rating,
+                    'description': result.description})
+                    
+
 
     # for pred in prediction:
         # result = Strain_data.query.filter(Strain_data.id == pred).all()
@@ -100,3 +110,7 @@ def predict():
     return jsonify({"id": _id,
                     "user_id": user_id,
                     "strain_ids": strain_ids})
+                    
+@primary_routes.route("/docs")
+def read_the_docs():
+    return render_template("documentation.html")
