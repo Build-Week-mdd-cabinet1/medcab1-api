@@ -142,7 +142,7 @@ class StrainPredictionClass():
             df_top_50_reccomendations = df_top_50_reccomendations.append(result)
 
 
-        filtered_recommendation_list = filter_function(model_recommendations=model_recommendations,
+        filtered_recommendation_list = filter_function(model_recommendations=df_top_50_recommendations,
                                                        user_positive=user_positive,
                                                        user_negative=user_negative,
                                                        user_flavors=user_flavors)

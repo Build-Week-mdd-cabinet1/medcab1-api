@@ -38,7 +38,7 @@ resPath = os.path.join(os.path.dirname(__file__),
         # return self.nn.kneighbors(tokens)
 
 
-model_lr = strainSuggester()
+# model_lr = strainSuggester()
 
 
 @primary_routes.route("/")
@@ -73,7 +73,7 @@ def predict():
     pred_engine = StrainPredictionClass()
 
     strain_ids = pred_engine.predict(race, positive_effects,
-                                     negative_effects, ailments,
+                                     negative_effects_avoid, ailments,
                                      flavors, additional_desired_effects)
 
     # strings_to_concat = [race, positive_effects,
