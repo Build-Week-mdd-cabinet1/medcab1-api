@@ -76,36 +76,6 @@ def predict():
                                      negative_effects_avoid, ailments,
                                      flavors, additional_desired_effects)
 
-    # strings_to_concat = [race, positive_effects,
-                         # negative_effects_avoid, ailments, flavors]
-
-    # attributes = ' '.join(strings_to_concat)
-    # logging.info("This is attributes: " + attributes)
-
-    # variable "prediction" will contain a list of 10 id's
-    # prediction = model_lr.suggestStrain(attributes)
-
-    # nums = (prediction[1])
-    # lst = nums.tolist()
-    # prediction = lst[0]
-
-        return jsonify({'id': result.id,
-                    'name': result.name,
-                    'race': result.race,
-                    'flavors': result.flavors,
-                    'positive': result.positive,
-                    'negative': result.negative,
-                    'medical': result.medical,
-                    'rating': result.rating,
-                    'description': result.description})
-                    
-
-
-    # for pred in prediction:
-        # result = Strain_data.query.filter(Strain_data.id == pred).all()
-        # temp.append(result)
-
-    # strain_ids = [prediction[i] for i in range(10)]
 
     return jsonify({"id": _id,
                     "user_id": user_id,
