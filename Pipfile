@@ -16,6 +16,7 @@ joblib = "*"
 scikit-learn = "==0.20.1"
 gensim = "*"
 pandas = "*"
+numpy = "*"
 
 [requires]
 python_version = "3"

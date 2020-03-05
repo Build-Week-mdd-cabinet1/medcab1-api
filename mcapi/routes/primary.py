@@ -75,12 +75,13 @@ def predict():
     strain_ids = pred_engine.predict(race, positive_effects,
                                      negative_effects_avoid, ailments,
                                      flavors, additional_desired_effects)
-
+    strain_ids = [int(strain_id) for strain_id in strain_ids]
+    logging.info([type(thing) for thing in strain_ids])
 
     return jsonify({"id": _id,
                     "user_id": user_id,
                     "strain_ids": strain_ids})
-                    
+
 @primary_routes.route("/docs")
 def read_the_docs():
     return render_template("documentation.html")
