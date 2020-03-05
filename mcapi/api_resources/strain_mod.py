@@ -53,17 +53,29 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
 
         output_tier_zero_list.append(strain_id)
 
+        positive_check = False
+        flavors_check = False
+        negative_check = False
 
         for i in strain_positive_list:
             if i in user_positive_list:
-                output_tier_one_list.append(strain_id)
+                if positive_check == False:
+
+                    output_tier_one_list.append(strain_id)
+                    positive_check = True
 
                 for i in strain_flavors_list:
                     if i in user_flavors_list:
-                        output_tier_two_list.append(strain_id)
+                        if flavors_check == False:
+
+                            output_tier_two_list.append(strain_id)
+                            flavors_check = True
 
                         if 'Anxious' not in user_negative_list or 'Paranoid' not in user_negative_list:
-                            output_tier_three_list.append(strain_id)
+                            if negative_check == False:
+
+                                output_tier_three_list.append(strain_id)
+                                negative_check = True
 
                         else:
                             pass
@@ -72,9 +84,9 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
         else:
             pass
 
-    logging.info("output_list: \n" + str(output_tier_one_list))
-    x = np.array(output_tier_three_list)
-    unique_list_tier_three = list(np.unique(x))
+
+    x = output_tier_three_list
+    unique_list_tier_three = x
 
     if len(unique_list_tier_three) >= 10:
         while len(unique_list_tier_three) > 10:
@@ -84,8 +96,8 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
 
     else:
 
-        x = np.array(output_tier_two_list)
-        unique_list_tier_two = list(np.unique(x))
+        x = output_tier_two_list
+        unique_list_tier_two = x
 
         if len(unique_list_tier_two) >= 10:
             while len(unique_list_tier_two) > 10:
@@ -95,8 +107,8 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
 
         else:
 
-            x = np.array(output_tier_one_list)
-            unique_list_tier_one = list(np.unique(x))
+            x = output_tier_one_list
+            unique_list_tier_one = x
 
             if len(unique_list_tier_one) >= 10:
                 while len(unique_list_tier_one) > 10:
@@ -106,8 +118,8 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
 
             else:
 
-                x = np.array(output_tier_zero_list)
-                unique_list_tier_zero = list(np.unique(x))
+                x = output_tier_zero_list
+                unique_list_tier_zero = x
 
                 if len(unique_list_tier_zero) >= 10:
                     while len(unique_list_tier_zero) > 10:
