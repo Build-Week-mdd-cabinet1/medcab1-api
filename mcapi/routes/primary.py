@@ -1,5 +1,6 @@
 import os
 import logging
+import requests
 
 
 from flask import Blueprint, jsonify, request, render_template
@@ -19,26 +20,6 @@ primary_routes = Blueprint("primary_routes", __name__)
 resPath = os.path.join(os.path.dirname(__file__),
                        '..', 'api_resources')
 
-
-
-
-# class strainSuggester():
-    # def __init__(self):
-        # self.nn = pickle.load(
-            # open(os.path.join(resPath, 'nn.pkl'), 'rb')
-        # )
-
-        # self.tfidf = pickle.load(
-            # open(os.path.join(resPath, 'tfidf.pkl'), 'rb')
-        # )
-
-    # def suggestStrain(self, input_text):
-        # tokenize = [token for token in simple_preprocess(input_text)]
-        # tokens = self.tfidf.transform(tokenize).todense()
-        # return self.nn.kneighbors(tokens)
-
-
-# model_lr = strainSuggester()
 
 
 @primary_routes.route("/")
@@ -76,11 +57,20 @@ def predict():
                                      negative_effects_avoid, ailments,
                                      flavors, additional_desired_effects)
     strain_ids = [int(strain_id) for strain_id in strain_ids]
-    logging.info([type(thing) for thing in strain_ids])
+
+    # post prediction back to web endpoint
+    url = f"https://medcabinet1.herokuapp.com/api/recommendedstrains/{user_id}/user"
+    payload = {"user_id": user_id,
+               "strain_id": strain_ids}
+    logging.info(payload)
+
+    res = requests.post(url, json=payload)
+    logging.info("status_code: " + str(res.status_code))
+
 
     return jsonify({"id": _id,
                     "user_id": user_id,
-                    "strain_ids": strain_ids})
+                    "strain_id": strain_ids})
 
 @primary_routes.route("/docs")
 def read_the_docs():
