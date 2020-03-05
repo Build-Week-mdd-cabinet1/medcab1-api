@@ -15,6 +15,7 @@ psycopg2 = "*"
 joblib = "*"
 scikit-learn = "==0.20.1"
 gensim = "*"
+pandas = "*"
 
 [requires]
 python_version = "3"

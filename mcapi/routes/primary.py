@@ -1,6 +1,5 @@
 import os
 import logging
-import pickle
 
 
 from flask import Blueprint, jsonify, request
@@ -8,7 +7,7 @@ from mcapi.models import db, Strain_data
 from joblib import load
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
-from gensim.utils import simple_preprocess
+from ..api_resources.strain_mod import *
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -23,20 +22,20 @@ resPath = os.path.join(os.path.dirname(__file__),
 
 
 
-class strainSuggester():
-    def __init__(self):
-        self.nn = pickle.load(
-            open(os.path.join(resPath, 'nn.pkl'), 'rb')
-        )
+# class strainSuggester():
+    # def __init__(self):
+        # self.nn = pickle.load(
+            # open(os.path.join(resPath, 'nn.pkl'), 'rb')
+        # )
 
-        self.tfidf = pickle.load(
-            open(os.path.join(resPath, 'tfidf.pkl'), 'rb')
-        )
+        # self.tfidf = pickle.load(
+            # open(os.path.join(resPath, 'tfidf.pkl'), 'rb')
+        # )
 
-    def suggestStrain(self, input_text):
-        tokenize = [token for token in simple_preprocess(input_text)]
-        tokens = self.tfidf.transform(tokenize).todense()
-        return self.nn.kneighbors(tokens)
+    # def suggestStrain(self, input_text):
+        # tokenize = [token for token in simple_preprocess(input_text)]
+        # tokens = self.tfidf.transform(tokenize).todense()
+        # return self.nn.kneighbors(tokens)
 
 
 model_lr = strainSuggester()
@@ -71,26 +70,32 @@ def predict():
     additional_desired_effects = user_input["additional_desired_effects"]
     user_id = user_input["user_id"]
 
-    strings_to_concat = [race, positive_effects,
-                         negative_effects_avoid, ailments, flavors]
+    pred_engine = StrainPredictionClass()
 
-    attributes = ' '.join(strings_to_concat)
-    logging.info("This is attributes: " + attributes)
+    strain_ids = pred_engine.predict(race, positive_effects,
+                                     negative_effects, ailments,
+                                     flavors, additional_desired_effects)
+
+    # strings_to_concat = [race, positive_effects,
+                         # negative_effects_avoid, ailments, flavors]
+
+    # attributes = ' '.join(strings_to_concat)
+    # logging.info("This is attributes: " + attributes)
 
     # variable "prediction" will contain a list of 10 id's
-    prediction = model_lr.suggestStrain(attributes)
+    # prediction = model_lr.suggestStrain(attributes)
 
-    nums = (prediction[1])
-    lst = nums.tolist()
-    prediction = lst[0]
+    # nums = (prediction[1])
+    # lst = nums.tolist()
+    # prediction = lst[0]
 
-    temp = []
+    # temp = []
 
-    for pred in prediction:
-        result = Strain_data.query.filter(Strain_data.id == pred).all()
-        temp.append(result)
+    # for pred in prediction:
+        # result = Strain_data.query.filter(Strain_data.id == pred).all()
+        # temp.append(result)
 
-    strain_ids = [prediction[i] for i in range(10)]
+    # strain_ids = [prediction[i] for i in range(10)]
 
     return jsonify({"id": _id,
                     "user_id": user_id,
