@@ -1,1 +1,1 @@
-web: gunicorn "mcapi:mc_api"
+web: gunicorn wsgi:mc_api
