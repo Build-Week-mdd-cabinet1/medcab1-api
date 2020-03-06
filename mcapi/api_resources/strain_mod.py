@@ -145,7 +145,7 @@ def filter_function(model_recommendations, user_positive,
 
 resPath = os.path.dirname(__file__)
 
-
+# Uses pickled models to predict on new text input
 class StrainPredictionClass():
     def __init__(self):
         with open(os.path.join(resPath, 'nn.pkl'), 'rb') as n_n:
