@@ -71,6 +71,7 @@ def predict():
 
     else:
         url = f"https://medcabinet1.herokuapp.com/api/recommendedstrains/{user_id}/user"
+        logging.info(url)
         payload = {"user_id": user_id,
                    "strain_id": strain_ids}
         logging.info(payload)
