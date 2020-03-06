@@ -164,7 +164,7 @@ class StrainPredictionClass():
         list_50 = list(nn_model_recommendations[1][0])
         nn_model_recommendations_list = list_50
 
-        df_strains = pd.read_csv('https://raw.githubusercontent.com/Tyler9937/Data-Science/master/strain_data.csv')
+        df_strains = pd.read_csv('https://raw.githubusercontent.com/Build-Week-mdd-cabinet1/Data-Science/Tyler-Russin/strain_data.csv')
         df_top_50_recommendations = []
         # logging.info("dftop50:\n" + str(df_top_50_recommendations))
         df_strains = df_strains.fillna("")

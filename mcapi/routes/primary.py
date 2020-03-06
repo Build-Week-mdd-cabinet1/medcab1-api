@@ -42,7 +42,12 @@ def get_strain(strain_id):
 def predict():
     user_input = request.get_json()
 
-    _id = user_input["id"]
+
+    try:
+        _id = user_input["id"]
+    except KeyError:
+        _id = None
+
     race = user_input["race"]
     positive_effects = user_input["positive_effects"]
     negative_effects_avoid = user_input["negative_effects_avoid"]
@@ -59,18 +64,24 @@ def predict():
     strain_ids = [int(strain_id) for strain_id in strain_ids]
 
     # post prediction back to web endpoint
-    url = f"https://medcabinet1.herokuapp.com/api/recommendedstrains/{user_id}/user"
-    payload = {"user_id": user_id,
-               "strain_id": strain_ids}
-    logging.info(payload)
+    if _id:
+        return jsonify({"id": _id,
+                        "user_id": user_id,
+                        "strain_id": strain_ids})
 
-    res = requests.post(url, json=payload)
-    logging.info("status_code: " + str(res.status_code))
+    else:
+        url = f"https://medcabinet1.herokuapp.com/api/recommendedstrains/{user_id}/user"
+        payload = {"user_id": user_id,
+                   "strain_id": strain_ids}
+        logging.info(payload)
+
+        res = requests.post(url, json=payload)
+        logging.info("status_code: " + str(res.status_code))
+
+        return jsonify({"user_id": user_id,
+                        "strain_id": strain_ids})
 
 
-    return jsonify({"id": _id,
-                    "user_id": user_id,
-                    "strain_id": strain_ids})
 
 @primary_routes.route("/docs")
 def read_the_docs():
