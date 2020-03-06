@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from gensim.utils import simple_preprocess
 
-# Filter out machine learning sklearn version warning
 
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -175,7 +174,7 @@ class StrainPredictionClass():
         )
         df_strains = pd.read_csv(strain_url)
         df_top_50_recommendations = []
-        # logging.info("dftop50:\n" + str(df_top_50_recommendations))
+
         df_strains = df_strains.fillna("")
         logging.info("df_strains fillna executed")
 
