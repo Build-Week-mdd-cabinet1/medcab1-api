@@ -28,6 +28,8 @@ def convert_string_to_list(x):
     return converted
 
 
+  # Filter function works with the k nearest model to give more 
+  # personalized reccomendations
 def filter_function(model_recommendations, user_positive,
                     user_negative, user_flavors):
 #the tiers will allow the filter to prioritize certain inputs 
@@ -145,7 +147,7 @@ def filter_function(model_recommendations, user_positive,
 
 resPath = os.path.dirname(__file__)
 
-# Uses pickled models to predict on new text input
+# Class loads in pickled models and is used to predict on new text inputs
 class StrainPredictionClass():
     def __init__(self):
         with open(os.path.join(resPath, 'nn.pkl'), 'rb') as n_n:
