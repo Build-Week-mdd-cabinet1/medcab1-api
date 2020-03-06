@@ -30,7 +30,7 @@ def convert_string_to_list(x):
 
 def filter_function(model_recommendations, user_positive,
                     user_negative, user_flavors):
-
+#the tiers will allow the filter to prioritize certain inputs 
     output_tier_zero_list = []
     output_tier_one_list = []
     output_tier_two_list = []
@@ -79,7 +79,7 @@ def filter_function(model_recommendations, user_positive,
 
                             output_tier_two_list.append(strain_id)
                             flavors_check = True
-
+                        #not all negatives are added due to how common and minor they are
                         if (
                           'Anxious' not in user_negative_list or
                           'Paranoid' not in user_negative_list
