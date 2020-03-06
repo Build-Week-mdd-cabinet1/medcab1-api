@@ -2,7 +2,6 @@ import os
 import logging
 import requests
 
-
 from flask import Blueprint, jsonify, request, render_template
 from mcapi.models import db, Strain_data
 from joblib import load
@@ -13,13 +12,9 @@ from ..api_resources.strain_mod import *
 
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - %(levelname)s - %(message)s")
+# ~ logging.disable(logging.INFO)
 
 primary_routes = Blueprint("primary_routes", __name__)
-
-
-resPath = os.path.join(os.path.dirname(__file__),
-                       '..', 'api_resources')
-
 
 
 @primary_routes.route("/")
@@ -41,7 +36,6 @@ def get_strain(strain_id):
 @primary_routes.route("/predict", methods=["POST"])
 def predict():
     user_input = request.get_json()
-
 
     try:
         _id = user_input["id"]
@@ -70,7 +64,10 @@ def predict():
                         "strain_id": strain_ids})
 
     else:
-        url = f"https://medcabinet1.herokuapp.com/api/recommendedstrains/{user_id}/user"
+        url = (
+          "https://medcabinet1.herokuapp.com/api/recommendedstrains/" +
+          f"{user_id}/user"
+        )
         logging.info(url)
         payload = {"user_id": user_id,
                    "strain_id": strain_ids}
@@ -81,7 +78,6 @@ def predict():
 
         return jsonify({"user_id": user_id,
                         "strain_id": strain_ids})
-
 
 
 @primary_routes.route("/docs")

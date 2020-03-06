@@ -1,31 +1,36 @@
 import os
 import pickle
 import logging
-from pprint import pprint
+
 
 import numpy as np
 import pandas as pd
 from gensim.utils import simple_preprocess
 
+# Filter out machine learning sklearn version warning
+
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - %(levelname)s - %(message)s")
-# logging.disable(logging.CRITICAL)
+logging.disable(logging.INFO)
 
 
 # Converts the lists of strings into normal strings
 def check_nans(x):
-    if x == None:
+    if x is None:
         return ""
     else:
         return x
 
 
 def convert_string_to_list(x):
-    converted = str(x).strip("]['").replace("'", "").replace("\n", "").split(', ')
+    converted = (
+        str(x).strip("]['").replace("'", "").replace("\n", "").split(', ')
+    )
     return converted
 
 
-def filter_function(model_recommendations, user_positive, user_negative, user_flavors):
+def filter_function(model_recommendations, user_positive,
+                    user_negative, user_flavors):
 
     output_tier_zero_list = []
     output_tier_one_list = []
@@ -41,11 +46,16 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
 
         logging.info("strain_id: " + str(strain_id))
         logging.info("strain_id type: " + str(type(strain_id)))
-        # logging.info("strain_positive: " + str(strain_positive))
 
-        strain_positive_list = convert_string_to_list(check_nans(strain_positive))
-        strain_negative_list = convert_string_to_list(check_nans(strain_negative))
-        strain_flavors_list = convert_string_to_list(check_nans(strain_flavors))
+        strain_positive_list = convert_string_to_list(
+                                   check_nans(strain_positive)
+                               )
+        strain_negative_list = convert_string_to_list(
+                                   check_nans(strain_negative)
+                               )
+        strain_flavors_list = convert_string_to_list(
+                                  check_nans(strain_flavors)
+                              )
 
         user_positive_list = convert_string_to_list(check_nans(user_positive))
         user_negative_list = convert_string_to_list(check_nans(user_negative))
@@ -59,20 +69,23 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
 
         for i in strain_positive_list:
             if i in user_positive_list:
-                if positive_check == False:
+                if positive_check is False:
 
                     output_tier_one_list.append(strain_id)
                     positive_check = True
 
                 for i in strain_flavors_list:
                     if i in user_flavors_list:
-                        if flavors_check == False:
+                        if flavors_check is False:
 
                             output_tier_two_list.append(strain_id)
                             flavors_check = True
 
-                        if 'Anxious' not in user_negative_list or 'Paranoid' not in user_negative_list:
-                            if negative_check == False:
+                        if (
+                          'Anxious' not in user_negative_list or
+                          'Paranoid' not in user_negative_list
+                        ):
+                            if negative_check is False:
 
                                 output_tier_three_list.append(strain_id)
                                 negative_check = True
@@ -83,7 +96,6 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
                     pass
         else:
             pass
-
 
     x = output_tier_three_list
     unique_list_tier_three = x
@@ -129,25 +141,18 @@ def filter_function(model_recommendations, user_positive, user_negative, user_fl
 
                 else:
 
-                    return [0,0,0,0,0,0,0,0,0,0]
+                    return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
-
-
-resPath = os.path.join(os.path.dirname(__file__),
-                       '..', 'api_resources')
-
+resPath = os.path.dirname(__file__)
 
 
 class StrainPredictionClass():
     def __init__(self):
-        self.nn = pickle.load(
-            open(os.path.join(resPath, 'nn.pkl'), 'rb')
-        )
-        self.tfidf = pickle.load(
-            open(os.path.join(resPath,'tfidf.pkl'), 'rb')
-        )
-
+        with open(os.path.join(resPath, 'nn.pkl'), 'rb') as n_n:
+            self.nn = pickle.load(n_n)
+        with open(os.path.join(resPath, 'tfidf.pkl'), 'rb') as vectorizer:
+            self.tfidf = pickle.load(vectorizer)
 
     def predict(self, user_race, user_positive, user_negative,
                 user_medical, user_flavors, user_additional_desired_effects):
@@ -164,7 +169,11 @@ class StrainPredictionClass():
         list_50 = list(nn_model_recommendations[1][0])
         nn_model_recommendations_list = list_50
 
-        df_strains = pd.read_csv('https://raw.githubusercontent.com/Build-Week-mdd-cabinet1/Data-Science/Tyler-Russin/strain_data.csv')
+        strain_url = (
+          'https://raw.githubusercontent.com/Build-Week-mdd-cabinet1/' +
+          'Data-Science/Tyler-Russin/strain_data.csv'
+        )
+        df_strains = pd.read_csv(strain_url)
         df_top_50_recommendations = []
         # logging.info("dftop50:\n" + str(df_top_50_recommendations))
         df_strains = df_strains.fillna("")
@@ -173,22 +182,22 @@ class StrainPredictionClass():
         for recommendation_id in nn_model_recommendations_list:
             result = df_strains.iloc[recommendation_id]
 
-            result = [result['Id'], result['Flavors'], result['Positive'], result['Negative']]
+            result = [
+                result['Id'], result['Flavors'],
+                result['Positive'], result['Negative']
+            ]
             df_top_50_recommendations.append(result)
-            #logging.info("\n" + str(df_top_50_recommendations))
 
-
-
-        # logging.info("dftop50:\n" + str(df_top_50_recommendations))
-        filtered_recommendation_list = filter_function(model_recommendations=df_top_50_recommendations,
-                                                       user_positive=user_positive,
-                                                       user_negative=user_negative,
-                                                       user_flavors=user_flavors)
-
+        filtered_recommendation_list = filter_function(
+                                         model_recommendations=(
+                                           df_top_50_recommendations
+                                         ),
+                                         user_positive=user_positive,
+                                         user_negative=user_negative,
+                                         user_flavors=user_flavors
+                                       )
 
         return filtered_recommendation_list
-
-
 
 
 model_lr = StrainPredictionClass()
