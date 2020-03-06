@@ -1,6 +1,7 @@
 import unittest
 from mcapi.app import mc_api
 
+# UnitTest function, used to test whether or not the API will return suggested results.
 
 class TestApp(unittest.TestCase):
 
