@@ -12,7 +12,7 @@ from ..api_resources.strain_mod import *
 
 logging.basicConfig(level=logging.DEBUG,
                     format="%(asctime)s - %(levelname)s - %(message)s")
-# ~ logging.disable(logging.INFO)
+logging.disable(logging.INFO)
 
 primary_routes = Blueprint("primary_routes", __name__)
 
